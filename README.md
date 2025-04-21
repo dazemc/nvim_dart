@@ -71,18 +71,9 @@ This is made possible by Neovim's flexible LSP architecture and a custom Lua con
             includeLanguages = { dart = 'html' },
             classAttributes = { 'class', 'className', 'style' },
             experimental = {
-              classRegex = { -- Your regex for Dart/Jaspr style classes
-                {
-                  'classes\\s*:\\s*\\[([^\\]]*)\\]\\s*\\.join\\(\\s*[\'"][^\'"]*[\'"]\\s*\\)',
-                  '[\'"]([^\'"]+)[\'"]',
-                },
-                "classes\\s*:\\s*'([^']*)'",
-                'classes\\s*:\\s*"([^"]*)"',
-                -- Add standard class attribute regex if needed
-                'class\\s*=\\s*"([^"]*)"',
-                "class\\s*=\\s*'([^']*)'",
-                'className\\s*=\\s*"([^"]*)"',
-                "className\\s*=\\s*'([^']*)'",
+              classRegex = {
+                '.*[cC]lass[es]?.*\\s*[:=]\\s*\\[([^\\]]*)\\]',
+                '.*[cC]lass[es]?.*\\s*[:=]\\s*[\'"]([^\'"]*)[\'"]',
               },
             },
             validate = true,

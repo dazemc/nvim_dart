@@ -631,18 +631,9 @@ require('lazy').setup({
             includeLanguages = { dart = 'html' },
             classAttributes = { 'class', 'className', 'style' },
             experimental = {
-              classRegex = { -- Your regex for Dart/Jaspr style classes
-                {
-                  'classes\\s*:\\s*\\[([^\\]]*)\\]\\s*\\.join\\(\\s*[\'"][^\'"]*[\'"]\\s*\\)',
-                  '[\'"]([^\'"]+)[\'"]',
-                },
-                "classes\\s*:\\s*'([^']*)'",
-                'classes\\s*:\\s*"([^"]*)"',
-                -- Add standard class attribute regex if needed
-                'class\\s*=\\s*"([^"]*)"',
-                "class\\s*=\\s*'([^']*)'",
-                'className\\s*=\\s*"([^"]*)"',
-                "className\\s*=\\s*'([^']*)'",
+              classRegex = { -- Your regex for Dart/Jaspr style classes,
+                '.*[cC]lass[es]?.*\\s*[:=]\\s*\\[([^\\]]*)\\]',
+                '.*[cC]lass[es]?.*\\s*[:=]\\s*[\'"]([^\'"]*)[\'"]',
               },
             },
             validate = true,
