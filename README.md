@@ -72,8 +72,11 @@ This is made possible by Neovim's flexible LSP architecture and a custom Lua con
             classAttributes = { 'class', 'className', 'style' },
             experimental = {
               classRegex = {
-                '.*[cC]lass[es]?.*\\s*[:=]\\s*\\[([^\\]]*)\\]',
-                '.*[cC]lass[es]?.*\\s*[:=]\\s*[\'"]([^\'"]*)[\'"]',
+                '[cC]lass[es]?.*\\s*[:=]\\s*[\'"]([^\'"]*)[\'"]',
+                {
+                  '.*[cC]lass[es]?.*\\s*[:=]\\s*\\[([^\\]]*)\\]\\s*',
+                  '[\'"]([^\'"]+)[\'"]',
+                },
               },
             },
             validate = true,
