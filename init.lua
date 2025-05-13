@@ -1,3 +1,4 @@
+-- vim.lsp.set_log_level 'debug'
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -407,7 +408,6 @@ require('lazy').setup({
   },
   { 'Bilal2453/luvit-meta', lazy = true },
   {
-    -- Main LSP Configuration (Existing Entry)
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Mason stack (Keep as is)
@@ -421,7 +421,6 @@ require('lazy').setup({
       -- nvim-cmp integration (Keep as is)
       'hrsh7th/cmp-nvim-lsp',
 
-      -- *** ADDED: Flutter Tools ***
       {
         'nvim-flutter/flutter-tools.nvim',
         dependencies = {
@@ -439,7 +438,6 @@ require('lazy').setup({
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
           local map = function(keys, func, desc, mode)
-            -- ... your mapping helper ...
             mode = mode or 'n'
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
@@ -543,14 +541,53 @@ require('lazy').setup({
         -- Keep your existing servers like ruff, lua_ls
         -- ruff_lsp = {}, -- If using the explicit setup below, comment this out or remove it
         lua_ls = { settings = { Lua = { completion = { callSnippet = 'Replace' } } } },
-        -- pyright = {},
+        pyright = {},
         -- gopls = {},
-        require('lspconfig').ruff.setup {
-          init_options = {
+        -- require('lspconfig').ruff.setup {
+        --   init_options = {
+        --     settings = {
+        --       -- Any extra CLI arguments for `ruff` go here.
+        --       args = {},
+        --     },
+        --   },
+        -- },
+      }
+      -- Define the custom daisyui_lsp server
+      local configs = require 'lspconfig.configs'
+
+      if not configs.daisyui_lsp then
+        configs.daisyui_lsp = {
+          default_config = {
+            name = 'daisyui_lsp',
+            cmd = { '/home/daze/Git/daisyui_lsp/bin/daisyui_lsp.exe' }, -- Your existing cmd
+            filetypes = { 'dart', 'html' }, -- Your existing filetypes
+            root_dir = require('lspconfig').util.root_pattern('pubspec.yaml', '.git'), -- Your existing root_dir
+            -- You can add other default settings here if needed
             settings = {
-              -- Any extra CLI arguments for `ruff` go here.
-              args = {},
+              daisyui_lsp = {
+                -- Any default server settings
+              },
             },
+          },
+        }
+      end
+
+      -- NOW you can call setup on the registered custom config
+      require('lspconfig').daisyui_lsp.setup {
+        -- You can override default_config settings here, or add more
+        capabilities = capabilities, -- Assuming 'capabilities' is defined earlier
+        on_attach = function(client, bufnr)
+          local opts = { noremap = true, silent = true }
+          vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+          vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+          -- Keep other on_attach logic from your global LspAttach if desired,
+          -- or move specific mappings here. The global LspAttach often handles
+          -- generic mappings like rename, code action etc.
+          print 'DaisyUI LSP attached' -- This print will now appear if it attaches
+        end,
+        settings = { -- You can override default settings here
+          daisyui_lsp = {
+            -- Specific settings for this setup call
           },
         },
       }
@@ -588,9 +625,12 @@ require('lazy').setup({
         },
       }
 
-      -- *** ADDED: Explicit setup for Flutter and Tailwind ***
-      -- Place these calls *after* the mason-lspconfig setup block
-
+      require('mason').setup {
+        registries = {
+          'github:mason-org/mason-registry',
+          'github:Crashdummyy/mason-registry',
+        },
+      }
       -- === Configure Flutter/Dart LSP using flutter-tools.nvim ===
       require('flutter-tools').setup {
         lsp = {
@@ -598,8 +638,8 @@ require('lazy').setup({
           -- on_attach is handled by the LspAttach autocommand group
         },
         -- Add flutter-tools specific options here if needed:
-        -- widget_guides = { enabled = true },
-        -- closing_labels = { enabled = true },
+        widget_guides = { enabled = true },
+        closing_labels = { enabled = true },
       }
 
       -- === Configure Tailwind CSS LSP ===
@@ -683,6 +723,8 @@ require('lazy').setup({
         -- Conform can also run multiple formatters sequentially
         python = { 'isort', 'black' },
         dart = { 'dart format' },
+        javascript = { 'prettierd' },
+        html = { 'prettierd' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
