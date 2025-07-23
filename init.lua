@@ -32,14 +32,6 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
-
 -- Enable break indent
 vim.opt.breakindent = true
 
@@ -1012,6 +1004,22 @@ require('lazy').setup({
     },
   },
 })
+local osc52 = require 'vim.ui.clipboard.osc52'
+
+vim.g.clipboard = {
+  name = 'osc52',
+  copy = {
+    ['+'] = osc52.copy '+',
+    ['*'] = osc52.copy '*',
+  },
+  paste = {
+    ['+'] = osc52.paste '+',
+    ['*'] = osc52.paste '*',
+  },
+}
+
+-- Make all yank/paste use system clipboard by default
+vim.opt.clipboard = 'unnamedplus'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
